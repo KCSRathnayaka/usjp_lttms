@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/form";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import axiosInstance from '../../utils/axiosInstance';
 
 
 
@@ -53,7 +54,7 @@ export default function AddSubject({ isOpen, onClose, fetchSubjects, courses }) 
 
         try {
 
-            const response = await axios.post('/manage/subjects/create', data);
+            const response = await axiosInstance.post('/manage/subjects/create', data);
             if (response.status === 200 || response.status === 201) {
 
               

@@ -49,7 +49,7 @@ const mainNavItems = [
     },
     {
         title: 'Time Table',
-
+        url: '/manage/timetables',
         icon: Calendar,
     },
 

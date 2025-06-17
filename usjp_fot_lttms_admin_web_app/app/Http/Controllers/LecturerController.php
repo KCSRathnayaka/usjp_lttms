@@ -43,14 +43,14 @@ class LecturerController extends Controller
             ], 422);
         }
 
-        if(Lecturer::where('email', $request->email)->exists()) {
+        if($request->email && Lecturer::where('email', $request->email)->exists()) {
             return response()->json([
                 'status' => false,
                 'message' => "Email already exists !",
             ], 422);
         }
 
-        if(Lecturer::where('mobile', $request->mobile)->exists()) {
+        if($request->mobile && Lecturer::where('mobile', $request->mobile)->exists()) {
             return response()->json([
                 'status' => false,
                 'message' => "Mobile number already exists !",

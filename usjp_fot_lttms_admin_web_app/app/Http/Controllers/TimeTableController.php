@@ -2,12 +2,112 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LectureTime;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class TimeTableController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return Inertia::render('manage/time_tables/Index');
+    }
+
+
+
+    public function modify($semester, $course)
+    {
+        return Inertia::render('manage/time_tables/Modify');
+    }
+
+
+    public function create(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'semester' => 'required',
+            'course' => 'required',
+            'lecturer' => 'required',
+            'lecture_hall' => 'required',
+            'subject' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'day' => 'required',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()->first(),
+            ], 422);
+        }
+
+
+        DB::beginTransaction();
+        try {
+
+            $lecture_time = new LectureTime();
+            $lecture_time->semester = $request->semester;
+            $lecture_time->course_id = $request->course;
+            $lecture_time->lecturer_id = $request->lecturer;
+            $lecture_time->lecture_hall_id = $request->lecture_hall;
+            $lecture_time->subject_id = $request->subject;
+            $lecture_time->day = $request->day;
+            $lecture_time->start_time = $request->start_time;
+            $lecture_time->end_time = $request->end_time;
+            $lecture_time->specialization_area_id = $request->specialization_area;
+            $lecture_time->save();
+
+
+            DB::commit();
+
+
+            return response()->json([
+                'status' => true,
+                'message' => "New lecture time created successfully",
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::error("Error creating time table: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'errors' => "Server error, please try again",
+            ], 500);
+        }
+    }
+
+
+
+    public function fetch(Request $request)
+    {
+
+
+        $semester = $request->semester ?? null;
+        $course = $request->course ?? null;
+        $specialization_area = $request->specialization_area ?? null;
+
+
+        $query = LectureTime::with('course')->with('subject')->with('lecturer')->with('lectureHall')->with('specializationArea');
+        if($semester){
+            $query->where('semester', $semester);
+        }
+        if($course){
+            $query->where('course_id', $course);
+        }
+        if($specialization_area){
+            $query->where('specialization_area_id', $specialization_area);
+        }
+        $time_table = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $time_table,
+        ], 200);
     }
 }

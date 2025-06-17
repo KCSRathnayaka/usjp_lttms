@@ -88,7 +88,7 @@ class CourseController extends Controller
 
         return response()->json([
             'status' => true,
-            'data' => Course::all()
+            'data' => Course::with('specialization_areas')->with('subjects')->get(),
         ]);
     }
 }
