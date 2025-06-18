@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('manage/timetables/{semester}/{course}/modify', [TimeTableController::class, 'modify'])->name('timetables.modify');
     Route::post('manage/timetables/create', [TimeTableController::class, 'create'])->name('timetables.create');
     Route::get('manage/timetables/fetch', [TimeTableController::class, 'fetch'])->name('timetables.fetch');
+    
 
 });
 

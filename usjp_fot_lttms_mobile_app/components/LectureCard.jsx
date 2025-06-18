@@ -4,49 +4,67 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Or any other icon l
 
 // LectureCard component for displaying individual lecture details.
 // It's styled to be clear, attractive, and user-friendly with icons.
-const LectureCard = ({ subject, time, venue, lecturer, isCurrent }) => (
-    <View style={[
-        styles.lectureCard,
-        isCurrent ? styles.currentLectureCard : styles.upcomingLectureCard,
-        // Add a subtle bounce/scale effect for the current lecture card
-        isCurrent && { transform: [{ scale: 1.02 }], elevation: 8, shadowOpacity: 0.25 }
-    ]}>
-        {/* Subject Title */}
-        <Text style={[
-            styles.lectureSubject,
-            isCurrent ? styles.currentText : styles.defaultSubjectText
+
+
+
+const LectureCard = ({ lecture, isCurrent }) => {
+
+    const formatTime = (date) => {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${date.toLocaleDateString()} ${hours}:${minutes}:${seconds}`;
+    };
+
+
+    return (
+        <View style={[
+            styles.lectureCard,
+            isCurrent ? styles.currentLectureCard : styles.upcomingLectureCard,
+            // Add a subtle bounce/scale effect for the current lecture card
+            isCurrent && { transform: [{ scale: 1.02 }], elevation: 8, shadowOpacity: 0.25 }
         ]}>
-            {subject}
-        </Text>
+            {/* Subject Title */}
+            <Text style={[
+                styles.lectureSubject,
+                isCurrent ? styles.currentText : styles.defaultSubjectText
+            ]}>
+                {lecture?.subject?.subject_name}
+            </Text>
 
-        {/* Horizontal Divider */}
-        <View style={styles.divider} />
+            {/* Horizontal Divider */}
+            <View style={styles.divider} />
 
-        {/* Time, Venue, Lecturer Details with Icons */}
-        <View style={styles.detailsContainer}>
-            <View style={styles.detailRow}>
-                <Icon name="clock-o" size={16} color={isCurrent ? '#ecf0f1' : '#7f8c8d'} style={styles.detailIcon} />
-                <Text style={[styles.lectureDetail, isCurrent ? styles.currentDetailText : styles.defaultDetailText]}>
-                    <Text style={styles.detailLabel}>Time:</Text> {time}
-                </Text>
-            </View>
+            {/* Time, Venue, Lecturer Details with Icons */}
+            <View style={styles.detailsContainer}>
+                <View style={styles.detailRow}>
+                    <Icon name="clock-o" size={16} color={isCurrent ? '#ecf0f1' : '#7f8c8d'} style={styles.detailIcon} />
+                    <Text style={[styles.lectureDetail, isCurrent ? styles.currentDetailText : styles.defaultDetailText]}>
+                        <Text style={styles.detailLabel}>Time:</Text> {lecture.start_time} - {lecture.end_time}
+                    </Text>
+                </View>
 
-            <View style={styles.detailRow}>
-                <Icon name="map-marker" size={16} color={isCurrent ? '#ecf0f1' : '#7f8c8d'} style={styles.detailIcon} />
-                <Text style={[styles.lectureDetail, isCurrent ? styles.currentDetailText : styles.defaultDetailText]}>
-                    <Text style={styles.detailLabel}>Venue:</Text> {venue}
-                </Text>
-            </View>
+                <View style={styles.detailRow}>
+                    <Icon name="map-marker" size={16} color={isCurrent ? '#ecf0f1' : '#7f8c8d'} style={styles.detailIcon} />
+                    <Text style={[styles.lectureDetail, isCurrent ? styles.currentDetailText : styles.defaultDetailText]}>
+                        <Text style={styles.detailLabel}>Venue:</Text> {lecture?.lecture_hall?.hall_name}
+                    </Text>
+                </View>
 
-            <View style={styles.detailRow}>
-                <Icon name="user-o" size={16} color={isCurrent ? '#ecf0f1' : '#7f8c8d'} style={styles.detailIcon} />
-                <Text style={[styles.lectureDetail, isCurrent ? styles.currentDetailText : styles.defaultDetailText]}>
-                    <Text style={styles.detailLabel}>Lecturer:</Text> {lecturer}
-                </Text>
+                <View style={styles.detailRow}>
+                    <Icon name="user-o" size={16} color={isCurrent ? '#ecf0f1' : '#7f8c8d'} style={styles.detailIcon} />
+                    <Text style={[styles.lectureDetail, isCurrent ? styles.currentDetailText : styles.defaultDetailText]}>
+                        <Text style={styles.detailLabel}>Lecturer:</Text> {lecture?.lecturer?.lecturer_name}
+                    </Text>
+                </View>
             </View>
         </View>
-    </View>
-);
+    )
+
+
+}
+
+
 
 // Consolidated styles for the LectureCard.
 // You should place these styles within your AppStyles.js or a dedicated LectureCardStyles.js

@@ -311,7 +311,7 @@ export default function AddNewLecture({ isOpen, onClose, fetchData, courses, sem
                                             <SelectContent>
                                                 {
                                                     days.map((day, index) => (
-                                                        <SelectItem key={index} value={`${index}`}>{day}</SelectItem>
+                                                        <SelectItem key={index} value={`${index+1}`}>{day}</SelectItem>
                                                     ))
                                                 }
                                             </SelectContent>

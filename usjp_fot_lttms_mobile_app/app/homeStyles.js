@@ -10,6 +10,10 @@ const styles = StyleSheet.create({
         flex: 1,
         // This view will contain the header and main scrollable content
     },
+    sidebarSubtitle: {
+        fontSize: 14,
+        color: '#7f8c8d', // Softer color for subtitle
+    },
     menuButton: {
         position: 'absolute',
         left: 15,
@@ -167,7 +171,7 @@ const styles = StyleSheet.create({
         top: 0,
         bottom: 0,
         left: 0,
-        width: 200,
+        width: 260,
         backgroundColor: '#34495e',
         paddingVertical: 20,
         paddingHorizontal: 10,
@@ -202,13 +206,20 @@ const styles = StyleSheet.create({
     },
     sidebarScrollView: {
         flexGrow: 1, // Allow scrolling within the sidebar
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5,
+
     },
     sidebarItem: {
         paddingVertical: 10,
-        paddingHorizontal: 5,
+        paddingHorizontal: 20,
         borderRadius: 8,
         marginBottom: 8,
-        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 10,
+        alignItems: 'start',
     },
     sidebarItemSelected: {
         backgroundColor: '#3498db',
@@ -219,7 +230,7 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     sidebarItemText: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '500',
         color: '#ecf0f1',
     },

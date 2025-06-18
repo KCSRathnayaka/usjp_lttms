@@ -91,4 +91,16 @@ class CourseController extends Controller
             'data' => Course::with('specialization_areas')->with('subjects')->get(),
         ]);
     }
+
+
+
+    public function fetch_for_mobile_app(Request $request)
+    {
+
+
+        return response()->json([
+            'status' => true,
+            'data' => Course::with('specialization_areas')->with('subjects')->get(),
+        ]);
+    }
 }

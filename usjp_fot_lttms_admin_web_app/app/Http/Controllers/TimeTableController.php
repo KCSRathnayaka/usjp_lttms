@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LectureTime;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -94,13 +95,13 @@ class TimeTableController extends Controller
 
 
         $query = LectureTime::with('course')->with('subject')->with('lecturer')->with('lectureHall')->with('specializationArea');
-        if($semester){
+        if ($semester) {
             $query->where('semester', $semester);
         }
-        if($course){
+        if ($course) {
             $query->where('course_id', $course);
         }
-        if($specialization_area){
+        if ($specialization_area) {
             $query->where('specialization_area_id', $specialization_area);
         }
         $time_table = $query->get();
@@ -109,5 +110,149 @@ class TimeTableController extends Controller
             'status' => true,
             'data' => $time_table,
         ], 200);
+    }
+
+
+
+    public function fetch_current_for_mobile_app(Request $request)
+    {
+
+
+        $semester = $request->semester ?? null;
+        $course = $request->course ?? null;
+        $specialization_area = $request->specialization_area ?? null;
+        $day = $request->day ?? null;
+
+        $validator = Validator::make($request->all(), [
+            'semester' => 'nullable',
+            'course' => 'nullable',
+            'specialization_area' => 'nullable',
+            'day' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => "Some parameters are missing",
+            ], 422);
+        }
+        $dayNumber = $this->getDayNumber($day);
+        $currentTime = Carbon::now()->format('H:i:s'); // e.g., "14:30:00"
+
+        $query = LectureTime::with('course')->with('subject')->with('lecturer')->with('lectureHall')->with('specializationArea')->where('semester', $semester)->where('course_id', $course)->where('day', $dayNumber)->whereTime('start_time', '<=', $currentTime)->whereTime('end_time', '>=', $currentTime);
+
+        if ($specialization_area) {
+            $query->where('specialization_area_id', $specialization_area);
+        }
+        $time_table = $query->first();
+
+        return response()->json([
+            'status' => true,
+            'data' => $time_table,
+        ], 200);
+    }
+
+
+
+    public function fetch_upcomming_for_mobile_app(Request $request)
+    {
+
+
+        $semester = $request->semester ?? null;
+        $course = $request->course ?? null;
+        $specialization_area = $request->specialization_area ?? null;
+        $day = $request->day ?? null;
+
+        $validator = Validator::make($request->all(), [
+            'semester' => 'nullable',
+            'course' => 'nullable',
+            'specialization_area' => 'nullable',
+            'day' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => "Some parameters are missing",
+            ], 422);
+        }
+
+
+        $currentTime = Carbon::now()->format('H:i:s'); // e.g., "14:30:00"
+        $dayNumber = $this->getDayNumber($day);
+        $query = LectureTime::with('course')->with('subject')->with('lecturer')->with('lectureHall')->with('specializationArea')->where('semester', $semester)->where('course_id', $course)->where('day', $dayNumber)->whereTime('start_time', '>', $currentTime);
+
+        if ($specialization_area) {
+            $query->where('specialization_area_id', $specialization_area);
+        }
+        $time_table = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $time_table,
+        ], 200);
+    }
+
+
+    public function fetch_by_days_for_mobile_app(Request $request)
+    {
+
+
+        $semester = $request->semester ?? null;
+        $course = $request->course ?? null;
+        $specialization_area = $request->specialization_area ?? null;
+        $day = $request->day ?? null;
+
+        $validator = Validator::make($request->all(), [
+            'semester' => 'nullable',
+            'course' => 'nullable',
+            'specialization_area' => 'nullable',
+            'day' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => "Some parameters are missing",
+            ], 422);
+        }
+
+
+        $currentTime = Carbon::now()->format('H:i:s'); // e.g., "14:30:00"
+        $dayNumber = $this->getDayNumber($day);
+        $query = LectureTime::with('course')->with('subject')->with('lecturer')->with('lectureHall')->with('specializationArea')->where('semester', $semester)->where('course_id', $course)->where('day', $dayNumber);
+
+        if ($specialization_area) {
+            $query->where('specialization_area_id', $specialization_area);
+        }
+        $time_table = $query->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $time_table,
+        ], 200);
+    }
+
+
+
+    public function getDayNumber(string $dayName): ?int
+    {
+        // Convert to a consistent case (e.g., ucfirst or strtolower) for robust comparison
+        $dayName = ucfirst(strtolower($dayName)); // "monday" -> "Monday", "MONDAY" -> "Monday"
+
+        switch ($dayName) {
+            case 'Monday':
+                return 1;
+            case 'Tuesday':
+                return 2;
+            case 'Wednesday':
+                return 3;
+            case 'Thursday':
+                return 4;
+            case 'Friday':
+                return 5;
+            default:
+                return null; // Or throw an exception for invalid input
+        }
     }
 }
